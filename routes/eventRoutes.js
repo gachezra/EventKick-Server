@@ -1,8 +1,38 @@
-const express = require("express"); const router = express.Router(); const { getEvents, createEvent, getEvent, updateEvent, deleteEvent, addFavorite, removeFavorite, getFavorites, addComment, removeComment, getComments, } = require("../controllers/eventController"); const validateToken = require("../middleware/validateTokenHandler");
-router.use(validateToken);
-router.route("/").get(getEvents).post(createEvent);
-router.route("/:id").get(getEvent).put(updateEvent).delete(deleteEvent);
-router.route("/:id/favorites").post(addFavorite).delete(removeFavorite).get(getFavorites);
-router.route("/:id/comments").post(addComment).delete(removeComment).get(getComments);
+const express = require("express");
+const router = express.Router();
+const verifyToken = require("../middleware/authMiddleware");
+const { 
+    getAllEvents,
+    createEvent, 
+    getEventById,
+    getPopularEvents,
+    getUpcomingEvents,
+    incrementOpenedCount,
+    getEventsByUserId,
+    deleteEvent,
+    updateEvent,
+    getPendingEvents,
+    approveEvent,
+    disapproveEvent,
+    getApprovedEvents,
+    registerEvent,
+    getUserRegisteredEvents
+} = require("../controllers/eventsController");
+
+router.get("/getevnt", getAllEvents);
+router.post("/addevnt", verifyToken,createEvent);
+router.get('/popular', getPopularEvents);
+router.get('/upcoming', getUpcomingEvents);
+router.get('/admin/approved', getApprovedEvents);
+router.get('/admin/pending', verifyToken, getPendingEvents);
+router.post('/register/:eventId', verifyToken, registerEvent);
+router.get('/user/:userId/registered', getUserRegisteredEvents);
+router.put('/admin/approve/:id', verifyToken, approveEvent);
+router.put('/admin/disapprove/:id', verifyToken, disapproveEvent);
+router.post('/incrementOpenedCount/:id', verifyToken, incrementOpenedCount);
+router.get('/user/:userId', verifyToken, getEventsByUserId);
+router.get('/:id', getEventById);
+router.delete('/:id', verifyToken, deleteEvent);
+router.put('/:id', verifyToken, updateEvent);
 
 module.exports = router;
