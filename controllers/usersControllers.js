@@ -225,6 +225,7 @@ module.exports.getUser = async (req, res, next) => {
       "email",
       "username",
       "avatarImage",
+      "role"
     ]);
     if (!user) {
       return res.json({ msg: "User not found.", status: false });
