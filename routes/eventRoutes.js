@@ -29,7 +29,7 @@ router.post('/register/:eventId', verifyToken, registerEvent);
 router.get('/user/:userId/registered', getUserRegisteredEvents);
 router.put('/admin/approve/:id', verifyToken, approveEvent);
 router.put('/admin/disapprove/:id', verifyToken, disapproveEvent);
-router.post('/incrementOpenedCount/:id', verifyToken, incrementOpenedCount);
+router.post('/incrementOpenedCount/:id', incrementOpenedCount);
 router.get('/user/:userId', verifyToken, getEventsByUserId);
 router.get('/:id', getEventById);
 router.delete('/:id', verifyToken, deleteEvent);
