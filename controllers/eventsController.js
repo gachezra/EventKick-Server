@@ -47,9 +47,15 @@ const createEvent = async (req, res) => {
 const getPopularEvents = async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 3; // Optional: add pagination limit from query
+
+    // Get the start of tomorrow
+    const tomorrow = new Date();
+    tomorrow.setHours(0, 0, 0, 0); // Set time to midnight
+    tomorrow.setDate(tomorrow.getDate() + 1); // Move to tomorrow
+
     const events = await Events.find({
       status: 'approved',
-      date: { $gte: new Date() } // Ensure only events that are today or in the future are fetched
+      date: { $gte: tomorrow } // Fetch events starting from tomorrow
     })
     .sort({ openedCount: -1 }) // Sort by popularity (openedCount descending)
     .limit(limit);
@@ -60,23 +66,30 @@ const getPopularEvents = async (req, res) => {
   }
 };
 
-
 const getUpcomingEvents = async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 3; // Optional: add pagination limit from query
+
+    // Get the start and end of tomorrow
+    const tomorrowStart = new Date();
+    tomorrowStart.setHours(0, 0, 0, 0); // Set time to midnight
+    tomorrowStart.setDate(tomorrowStart.getDate() + 1); // Move to tomorrow
+
+    const tomorrowEnd = new Date(tomorrowStart); // Clone tomorrowStart
+    tomorrowEnd.setHours(23, 59, 59, 999); // Set time to end of tomorrow
+
     const events = await Events.find({
       status: 'approved',
-      date: { $gte: new Date() } // Filter out past events
+      date: { $gte: tomorrowStart, $lte: tomorrowEnd } // Fetch events only for tomorrow
     })
     .sort({ date: 1 }) // Sort by date (upcoming first)
     .limit(limit);
 
     res.json(events);
   } catch (err) {
-    res.status(500).json({ message: 'Error fetching events', error: err.message });
+    res.status(500).json({ message: 'Error fetching upcoming events for tomorrow', error: err.message });
   }
 };
-
 
 const incrementOpenedCount = async (req, res) => {
   try {
