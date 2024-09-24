@@ -46,21 +46,37 @@ const createEvent = async (req, res) => {
 
 const getPopularEvents = async (req, res) => {
   try {
-    const events = await Events.find({ status: 'approved' }).sort({ openedCount: -1 }).limit(3);
+    const limit = parseInt(req.query.limit) || 3; // Optional: add pagination limit from query
+    const events = await Events.find({
+      status: 'approved',
+      date: { $gte: new Date() } // Ensure only events that are today or in the future are fetched
+    })
+    .sort({ openedCount: -1 }) // Sort by popularity (openedCount descending)
+    .limit(limit);
+
     res.json(events);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: 'Error fetching popular events', error: err.message });
   }
 };
 
+
 const getUpcomingEvents = async (req, res) => {
   try {
-    const events = await Events.find({ status: 'approved' }).sort({ date: 1 }).limit(3);
+    const limit = parseInt(req.query.limit) || 3; // Optional: add pagination limit from query
+    const events = await Events.find({
+      status: 'approved',
+      date: { $gte: new Date() } // Filter out past events
+    })
+    .sort({ date: 1 }) // Sort by date (upcoming first)
+    .limit(limit);
+
     res.json(events);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: 'Error fetching events', error: err.message });
   }
 };
+
 
 const incrementOpenedCount = async (req, res) => {
   try {
