@@ -28,23 +28,14 @@ module.exports.register = async (req, res, next) => {
     const emailVerificationToken = crypto.randomBytes(64).toString('hex');
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // save user only after mail is sent
-    const user = await User.create({
-      email,
-      username,
-      password: hashedPassword,
-      emailVerificationToken,
-      emailVerificationExpires: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
-    });
-
     // Send verification email    
     const mailOptions = {
       from: 'EventKick Team <noreply@eventkick.ke>',
-      to: user.email,
+      to: email,
       subject: 'Email Verification',
       html: `
         <h1>Email Verification</h1>
-        <p>Hello ${user.username},</p>
+        <p>Hello ${username},</p>
         <p>Please verify youremail by clicking the following link:</p>
         <a href="${process.env.DOMAIN}/verify/${emailVerificationToken}">Verify Email</a>
         <p>This link will expire in 1 hour.</p>
@@ -52,6 +43,15 @@ module.exports.register = async (req, res, next) => {
     };
 
     await mg.messages.create('eventkick.ke', mailOptions);
+
+    // save user only after mail is sent
+    await User.create({
+      email,
+      username,
+      password: hashedPassword,
+      emailVerificationToken,
+      emailVerificationExpires: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
+    });
     return res.json({ status: true, msg: "User registered successfully. Check your email for verification." });
   } catch (error) {
     next(error);
@@ -137,7 +137,7 @@ module.exports.forgotPassword = async (req, res, next) => {
       subject: 'Password Reset',
       html: `You are receiving this because you (or someone else) have requested the reset of the password for your account.
              Please click on the following link, or paste this into your browser to complete the process:
-             <a href="${resetUrl}">${resetUrl}</a>
+             <a href="${resetUrl}">Reset Password</a>
              If you did not request this, please ignore this email and your password will remain unchanged.
              Your password reset link will expire in 15Mins`,
     };
