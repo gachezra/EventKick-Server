@@ -28,6 +28,15 @@ module.exports.register = async (req, res, next) => {
     const emailVerificationToken = crypto.randomBytes(64).toString('hex');
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // save user only after mail is sent
+    const user = await User.create({
+      email,
+      username,
+      password: hashedPassword,
+      emailVerificationToken,
+      emailVerificationExpires: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
+    });
+
     // Send verification email    
     const mailOptions = {
       from: 'EventKick Team <noreply@eventkick.ke>',
@@ -43,15 +52,6 @@ module.exports.register = async (req, res, next) => {
     };
 
     await mg.messages.create('eventkick.ke', mailOptions);
-
-    // save user only after mail is sent
-    const user = await User.create({
-      email,
-      username,
-      password: hashedPassword,
-      emailVerificationToken,
-      emailVerificationExpires: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
-    });
     return res.json({ status: true, msg: "User registered successfully. Check your email for verification." });
   } catch (error) {
     next(error);
