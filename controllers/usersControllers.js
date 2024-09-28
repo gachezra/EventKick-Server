@@ -1,7 +1,6 @@
 const User = require("../model/userModel");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken"); 
-const nodemailer = require('nodemailer');
+const jwt = require("jsonwebtoken");
 const crypto = require('crypto');
 const formData = require('form-data');
 const dotenv = require('dotenv');
@@ -13,6 +12,28 @@ const mg = mailgun.client({
   key: process.env.MAILGUN_API,
   url: process.env.MAILGUN_URL
 });
+
+module.exports.sendMessage = async (req, res, next) => {
+  try {
+    const { name, email, subject, message } = req.body
+
+    const mailOptions = {
+      from: `${name} <${email}>`,
+      to: 'ezragach@eventkick.ke',
+      subject: `${subject}`,
+      html: `
+        <h1>Message</h1>
+        <p>${message}</p>
+      `
+    };
+
+    await mg.messages.create('eventkick.ke', mailOptions);
+
+    return res.json({ status: true, msg: "Message sent successfuly, check for a response after a while." });
+  } catch(e) {
+    next(e)
+  }
+}
 
 module.exports.register = async (req, res, next) => {
   try {

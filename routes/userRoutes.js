@@ -7,7 +7,8 @@ const {
   updateUser,
   verifyEmail,
   forgotPassword,
-  resetPassword,  
+  resetPassword,
+  sendMessage,  
 } = require("../controllers/usersControllers");
 const verifyToken = require("../middleware/authMiddleware");
 const router = require("express").Router();
@@ -17,6 +18,7 @@ router.post("/login", login);
 router.get("/verify-email/:token", verifyEmail);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password/:token", resetPassword);
+router.post("/sendMessage", sendMessage)
 
 // Apply authentication to the routes that require it
 router.post("/setAvatar/:id", verifyToken, setAvatar);
