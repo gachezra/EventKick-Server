@@ -48,14 +48,12 @@ const getPopularEvents = async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 3; // Optional: add pagination limit from query
 
-    // Get the start of tomorrow
-    const tomorrow = new Date();
-    tomorrow.setHours(0, 0, 0, 0); // Set time to midnight
-    tomorrow.setDate(tomorrow.getDate() + 1); // Move to tomorrow
+    // Get the current date and time
+    const now = new Date();
 
     const events = await Events.find({
       status: 'approved',
-      date: { $gte: tomorrow } // Fetch events starting from tomorrow
+      date: { $gte: now } // Fetch events starting from the current date and time
     })
     .sort({ openedCount: -1 }) // Sort by popularity (openedCount descending)
     .limit(limit);
@@ -70,26 +68,26 @@ const getUpcomingEvents = async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 3; // Optional: add pagination limit from query
 
-    // Get the start and end of tomorrow
-    const tomorrowStart = new Date();
-    tomorrowStart.setHours(0, 0, 0, 0); // Set time to midnight
-    tomorrowStart.setDate(tomorrowStart.getDate() + 1); // Move to tomorrow
+    // Get the current date and time
+    const now = new Date();
 
-    const tomorrowEnd = new Date(tomorrowStart); // Clone tomorrowStart
-    tomorrowEnd.setHours(23, 59, 59, 999); // Set time to end of tomorrow
+    // Set the end of today (23:59:59)
+    const endOfToday = new Date(now);
+    endOfToday.setHours(23, 59, 59, 999);
 
     const events = await Events.find({
       status: 'approved',
-      date: { $gte: tomorrowStart, $lte: tomorrowEnd } // Fetch events only for tomorrow
+      date: { $gte: now, $lte: endOfToday } // Fetch events starting from now until the end of today
     })
-    .sort({ date: 1 }) // Sort by date (upcoming first)
+    .sort({ date: 1 })
     .limit(limit);
 
     res.json(events);
   } catch (err) {
-    res.status(500).json({ message: 'Error fetching upcoming events for tomorrow', error: err.message });
+    res.status(500).json({ message: 'Error fetching upcoming events for today', error: err.message });
   }
 };
+
 
 const incrementOpenedCount = async (req, res) => {
   try {
