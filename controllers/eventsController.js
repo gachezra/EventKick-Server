@@ -194,7 +194,7 @@ const getApprovedEvents = async (req, res) => {
   }
 };
 
-const registerEvent = async (req, res) => {
+const buyTicket = async (req, res) => {
   const { eventId } = req.params;
   const { userId, tickets } = req.body; 
 
@@ -218,6 +218,29 @@ const registerEvent = async (req, res) => {
         user.tickets.push({ eventId, ticketNumber });
       }
     }
+
+    await event.save();
+    await user.save();
+
+    res.status(200).json({ message: "Successfully registered for the event" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+const registerEvent = async (req, res) => {
+  const { eventId } = req.params;
+  const { userId } = req.body; 
+
+  try {
+    const event = await Events.findById(eventId);
+    const user = await User.findById(userId);
+
+    if (!event || !user) {
+      return res.status(404).json({ message: "Event or User not found" });
+    }
+
+    event.registeredUsers.push(userId);
 
     await event.save();
     await user.save();
