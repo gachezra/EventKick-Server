@@ -211,6 +211,7 @@ const buyTicket = async (req, res) => {
     // }
 
     event.registeredUsers.push(userId);
+    user.registeredEvents.push(eventId);
 
     if (tickets) {
       for (let i = 1; i <= tickets; i++) {
@@ -241,6 +242,7 @@ const registerEvent = async (req, res) => {
     }
 
     event.registeredUsers.push(userId);
+    user.registeredEvents.push(eventId);
 
     await event.save();
     await user.save();
