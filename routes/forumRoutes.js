@@ -6,7 +6,7 @@ const verifyToken = require('../middleware/authMiddleware');
 // Thread Routes
 router.post('/add-thread', verifyToken, forumController.addForumThread);
 router.get('/threads/:eventId', verifyToken, forumController.getForumThreads);
-router.delete('/threads/:threadId', verifyToken, forumController.deleteForumThread);
+router.delete('/threads/:threadId/:userId', verifyToken, forumController.deleteForumThread);
 
 // Post Routes
 router.get('/thread/:threadId', verifyToken, forumController.getForumPosts);
