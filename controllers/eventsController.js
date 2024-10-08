@@ -253,6 +253,49 @@ const registerEvent = async (req, res) => {
   }
 };
 
+const favouriteEvent = async (req, res) => {
+  const { eventId } = req.params;
+  const { userId } = req.body;
+
+  try {
+    const event = await Events.findById(eventId);
+    const user = await User.findById(userId);
+
+    if (!event || !user) {
+      return res.status(404).json({ message: "Event or User not found" });
+    }
+
+    // Check if the user has already favorited the event
+    const isFavorited = event.favouritedByUser.includes(userId);
+
+    if (isFavorited) {
+      // Remove user from event's favouritedByUser array
+      event.favouritedByUser = event.favouritedByUser.filter(id => id.toString() !== userId.toString());
+
+      // Remove event from user's favouriteEvents array
+      user.favouriteEvents = user.favouriteEvents.filter(id => id.toString() !== eventId.toString());
+
+      await event.save();
+      await user.save();
+
+      return res.status(200).json({ message: "Successfully removed from favorites" });
+    } else {
+      // Add user to event's favouritedByUser array
+      event.favouritedByUser.push(userId);
+
+      // Add event to user's favouriteEvents array
+      user.favouriteEvents.push(eventId);
+
+      await event.save();
+      await user.save();
+
+      return res.status(200).json({ message: "Successfully favorited the event" });
+    }
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
 const getUserRegisteredEvents = async (req, res) => {
   try {
     const userId = req.params.userId;
