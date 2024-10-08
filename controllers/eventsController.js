@@ -328,4 +328,6 @@ module.exports = {
   getApprovedEvents,
   registerEvent,
   getUserRegisteredEvents,
+  favouriteEvent,
+  buyTicket,
 };
