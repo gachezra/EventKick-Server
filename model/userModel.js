@@ -39,7 +39,11 @@ const userSchema = new mongoose.Schema({
   registeredEvents: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Events"
-  }]
+  }],
+  favouriteEvents: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Events"
+  }],
 }, {
   timestamps: true,
 });
