@@ -280,7 +280,7 @@ module.exports.updateUser = async (req, res, next) => {
       { new: true }
     );
 
-    return res.json({ status: true, user: userData });
+    return res.json({ status: true, user: userData, msg: 'Profile successfully updated' });
   } catch (error) {
     next(error);
   }
