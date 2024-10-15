@@ -241,7 +241,7 @@ const registerEvent = async (req, res) => {
       return res.status(404).json({ message: "Event or User not found" });
     }
 
-    event.registeredUsers.push(userId);
+    event.registeredUsers.push({ user: userId, ticketScanned: false });
     user.registeredEvents.push(eventId);
 
     await event.save();
