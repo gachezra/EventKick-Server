@@ -258,20 +258,33 @@ const updateTicketScanned = async (req, res) => {
   const { scanned } = req.body; // Get the scanned status from the request body
 
   try {
-    // Find the event by its ID and update the registered user's ticketScanned status
-    const event = await Events.findOneAndUpdate(
+    // Find the event and the specific user within the registeredUsers array
+    const event = await Events.findOne(
       { _id: eventId, 'registeredUsers.user': userId }, // Match event and user
-      { $set: { 'registeredUsers.$.ticketScanned': scanned } }, // Update ticketScanned
-      { new: true } // Return the updated document
+      { 'registeredUsers.$': 1 } // Select only the matched registered user
     );
 
     if (!event) {
       return res.status(404).json({ message: 'Event or user not found' });
     }
 
+    const userTicket = event.registeredUsers[0]; // Get the specific user's ticket details
+
+    // Check if the ticket is already scanned
+    if (userTicket.ticketScanned) {
+      return res.status(400).json({ message: 'Ticket has already been scanned' });
+    }
+
+    // Update the ticketScanned status if it's not already scanned
+    const updatedEvent = await Events.findOneAndUpdate(
+      { _id: eventId, 'registeredUsers.user': userId }, // Match event and user
+      { $set: { 'registeredUsers.$.ticketScanned': scanned } }, // Update ticketScanned
+      { new: true } // Return the updated document
+    );
+
     return res.status(200).json({
       message: 'Ticket scan status updated successfully',
-      event,
+      event: updatedEvent,
     });
   } catch (error) {
     console.error('Error updating ticket scanned status:', error);
@@ -280,6 +293,7 @@ const updateTicketScanned = async (req, res) => {
     });
   }
 };
+
 
 const favouriteEvent = async (req, res) => {
   const { eventId } = req.params;
