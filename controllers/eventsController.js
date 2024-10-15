@@ -259,7 +259,7 @@ const updateTicketScanned = async (req, res) => {
 
   try {
     // Find the event by its ID and update the registered user's ticketScanned status
-    const event = await Event.findOneAndUpdate(
+    const event = await Events.findOneAndUpdate(
       { _id: eventId, 'registeredUsers.user': userId }, // Match event and user
       { $set: { 'registeredUsers.$.ticketScanned': scanned } }, // Update ticketScanned
       { new: true } // Return the updated document
