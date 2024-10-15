@@ -19,6 +19,7 @@ const {
     getUserRegisteredEvents,
     favouriteEvent,
     buyTicket,
+    updateTicketScanned
 } = require("../controllers/eventsController");
 
 router.get("/getevnt", getAllEvents);
@@ -32,6 +33,7 @@ router.post('/buy/:eventId', verifyToken, buyTicket);
 router.post('/favourite/:eventId', verifyToken, favouriteEvent);
 router.get('/user/:userId/registered', getUserRegisteredEvents);
 router.put('/admin/approve/:id', verifyToken, approveEvent);
+router.post('/scan/:eventId/:userId', verifyToken, updateTicketScanned);
 router.put('/admin/disapprove/:id', verifyToken, disapproveEvent);
 router.post('/incrementOpenedCount/:id', incrementOpenedCount);
 router.get('/user/:userId', verifyToken, getEventsByUserId);
