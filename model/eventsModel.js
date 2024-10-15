@@ -59,8 +59,15 @@ const eventSchema = new mongoose.Schema({
     required: true,
   },
   registeredUsers: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true
+    },
+    ticketScanned: {
+      type: Boolean,
+      default: false
+    }
   }],
   favouritedByUser: [{
     type: mongoose.Schema.Types.ObjectId,
