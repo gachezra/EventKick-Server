@@ -253,6 +253,34 @@ const registerEvent = async (req, res) => {
   }
 };
 
+const updateTicketScanned = async (req, res) => {
+  const { eventId, userId } = req.params; // Get eventId and userId from request parameters
+  const { scanned } = req.body; // Get the scanned status from the request body
+
+  try {
+    // Find the event by its ID and update the registered user's ticketScanned status
+    const event = await Event.findOneAndUpdate(
+      { _id: eventId, 'registeredUsers.user': userId }, // Match event and user
+      { $set: { 'registeredUsers.$.ticketScanned': scanned } }, // Update ticketScanned
+      { new: true } // Return the updated document
+    );
+
+    if (!event) {
+      return res.status(404).json({ message: 'Event or user not found' });
+    }
+
+    return res.status(200).json({
+      message: 'Ticket scan status updated successfully',
+      event,
+    });
+  } catch (error) {
+    console.error('Error updating ticket scanned status:', error);
+    return res.status(500).json({
+      message: 'Internal server error',
+    });
+  }
+};
+
 const favouriteEvent = async (req, res) => {
   const { eventId } = req.params;
   const { userId } = req.body;
@@ -330,4 +358,5 @@ module.exports = {
   getUserRegisteredEvents,
   favouriteEvent,
   buyTicket,
+  updateTicketScanned
 };
