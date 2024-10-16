@@ -28,8 +28,6 @@ const createEvent = async (req, res) => {
     description: req.body.description,
     date: req.body.date,
     location: req.body.location,
-    latitude: req.body.latitude,
-    longitude: req.body.longitude,
     user: req.body.user,
     image: req.body.image,
     isPaid: req.body.isPaid,
