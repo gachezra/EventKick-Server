@@ -17,14 +17,6 @@ const eventSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  latitude: {
-    type: String,
-    required: true,
-  },
-  longitude: {
-    type: String,
-    required: true,
-  },
   image: {
     type: String,
     default: null,
