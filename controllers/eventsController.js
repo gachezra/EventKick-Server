@@ -318,7 +318,10 @@ const favouriteEvent = async (req, res) => {
       await event.save();
       await user.save();
 
-      return res.status(200).json({ message: "Successfully removed from favorites" });
+      return res.status(200).json({
+        message: "Successfully removed from favorites",
+        favoritedCount: event.favouritedByUser.length
+      });
     } else {
       // Add user to event's favouritedByUser array
       event.favouritedByUser.push(userId);
