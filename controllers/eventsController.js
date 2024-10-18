@@ -332,7 +332,10 @@ const favouriteEvent = async (req, res) => {
       await event.save();
       await user.save();
 
-      return res.status(200).json({ message: "Successfully favorited the event" });
+      return res.status(200).json({
+        message: "Successfully favorited the event",
+        favoritedCount: event.favouritedByUser.length
+      });
     }
   } catch (err) {
     return res.status(500).json({ message: err.message });
