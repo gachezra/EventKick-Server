@@ -362,10 +362,11 @@ const trackShare = async (req, res) => {
   const { eventId } = req.params;
   const { platform } = req.body;
   console.log('Received request:', { eventId, platform });
+  console.log(eventId.toString());
 
   try {
     console.log('Attempting to find event with ID:', eventId);
-    const event = await Event.findById(eventId);
+    const event = await Event.findById(eventId.toString());
     console.log('Found event:', event);
 
     if (!event) {
