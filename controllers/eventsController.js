@@ -359,10 +359,11 @@ const getUserRegisteredEvents = async (req, res) => {
 };
 
 const trackShare = async (req, res) => {
+  const { eventId } = req.params;
   const { platform } = req.body;
 
   try {
-    const event = await Event.findById(req.params.eventId);
+    const event = await Events.findById(eventId);
     console.log('Found event:', event);
 
     if (!event) {
