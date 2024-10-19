@@ -359,15 +359,17 @@ const getUserRegisteredEvents = async (req, res) => {
 };
 
 const trackShare = async (req, res) => {
-  const { eventId } = req.params.eventId;
+  const { eventId } = req.params;
   const { platform } = req.body;
-
-  console.log(req.params);
+  console.log('Received request:', { eventId, platform });
 
   try {
+    console.log('Attempting to find event with ID:', eventId);
     const event = await Event.findById(eventId);
-    console.log(event);
+    console.log('Found event:', event);
+
     if (!event) {
+      console.log('Event not found');
       return res.status(404).json({ message: 'Event not found' });
     }
 
