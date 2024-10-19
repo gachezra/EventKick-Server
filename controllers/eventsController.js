@@ -358,6 +358,34 @@ const getUserRegisteredEvents = async (req, res) => {
   }
 };
 
+const trackShare = async (req, res) => {
+  const { eventId } = req.params;
+  const { platform } = req.body;
+
+  try {
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+
+    // Increment the share count for the specific platform
+    if (!event.shares) {
+      event.shares = {};
+    }
+    event.shares[platform] = (event.shares[platform] || 0) + 1;
+
+    // Increment total share count
+    event.totalShares = (event.totalShares || 0) + 1;
+
+    await event.save();
+
+    res.status(200).json({ message: 'Share tracked successfully' });
+  } catch (error) {
+    console.error('Error tracking share:', error);
+    res.status(500).json({ message: 'Error tracking share' });
+  }
+}
+
 module.exports = {
   getAllEvents,
   createEvent,
@@ -376,5 +404,6 @@ module.exports = {
   getUserRegisteredEvents,
   favouriteEvent,
   buyTicket,
-  updateTicketScanned
+  updateTicketScanned,
+  trackShare
 };
