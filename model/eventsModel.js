@@ -65,6 +65,12 @@ const eventSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User"
   }],
+  shares: {
+    whatsapp: { type: Number, default: 0 },
+    twitter: { type: Number, default: 0 },
+    instagram: { type: Number, default: 0 }
+  },
+  totalShares: { type: Number, default: 0 },
 }, {
   timestamps: true,
 });
