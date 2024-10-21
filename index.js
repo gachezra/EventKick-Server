@@ -9,6 +9,7 @@ const reviewRouter = require("./routes/reviewRoutes");
 const forumRoutes = require("./routes/forumRoutes");
 const transactionRoutes = require("./routes/transactionRoutes");
 const verifyToken = require("./middleware/authMiddleware");
+const lipaNaMpesaRoutes = require("./routes/routes.lipanampesa.js");
 require("dotenv").config();
 
 const app = express();
@@ -17,6 +18,7 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+app.use("/api/mpesa", lipaNaMpesaRoutes)
 app.use("/api/auth", userRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/comments", commentRouter);
