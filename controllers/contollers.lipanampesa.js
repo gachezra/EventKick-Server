@@ -20,6 +20,7 @@ module.exports.initiateSTKPush = async(req, res) => {
         console.log("Amount being sent to API: ", amount);
         console.log("Phone number being sent to API: ", phone);
         console.log("OderId being sent to API: ", Order_ID);
+        console.log("Event ticket being bought: ", eventTitle);
         request({
             url: url,
             method: "POST",
