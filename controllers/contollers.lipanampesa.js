@@ -8,7 +8,7 @@ const { getTimestamp } = require("../utils/utils.timestamp.js");
 // @access public
 module.exports.initiateSTKPush = async(req, res) => {
     try {
-        const { amount, phone, Order_ID, eventTitle } = req.body;
+        const { amount, phone, Order_ID } = req.body;
         const url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest";
         const auth = "Bearer " + req.safaricom_access_token;
 
@@ -20,7 +20,6 @@ module.exports.initiateSTKPush = async(req, res) => {
         console.log("Amount being sent to API: ", amount);
         console.log("Phone number being sent to API: ", phone);
         console.log("OderId being sent to API: ", Order_ID);
-        console.log("Event ticket being bought: ", eventTitle);
         request({
             url: url,
             method: "POST",
@@ -37,7 +36,7 @@ module.exports.initiateSTKPush = async(req, res) => {
                 "PartyB": process.env.BUSINESS_SHORT_CODE,
                 "PhoneNumber": phone,
                 "CallBackURL": callback_url,
-                "AccountReference": `Get ticket for ${eventTitle} worth ${amount}`,
+                "AccountReference": `Get ticket for ${amount}`,
                 "TransactionDesc": `Paid for ${Order_ID}`
             }
         }, function (e, response, body) {
