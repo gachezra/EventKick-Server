@@ -19,10 +19,12 @@ module.exports.sendMessage = async (req, res, next) => {
 
     const mailOptions = {
       from: `${name} <${email}>`,
-      to: 'ezragach@eventkick.ke',
-      subject: `${subject}`,
+      to: 'gachomoezra@gmail.com',
+      subject: 'Mail from EventKick Page',
       html: `
-        <h1>Message</h1>
+        <h1>Subject</h1>
+        <p>${subject}</p>
+        <h2>Message</h2>
         <p>${message}</p>
       `
     };
