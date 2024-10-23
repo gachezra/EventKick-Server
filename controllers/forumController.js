@@ -110,24 +110,52 @@ module.exports.addForumPost = async (req, res, next) => {
 module.exports.getForumPosts = async (req, res, next) => {
   try {
     const { threadId } = req.params;
+    
+    // Helper function to recursively populate replies
+    const populateRepliesRecursively = async (posts) => {
+      for (const post of posts) {
+        if (post.replies && post.replies.length > 0) {
+          // Populate the user data for each reply
+          await ForumPost.populate(post.replies, {
+            path: 'user',
+            select: 'username avatarImage'
+          });
+          
+          // Load the full reply documents to access their nested replies
+          post.replies = await ForumPost.find({
+            '_id': { $in: post.replies }
+          });
+          
+          // Recursively populate replies of replies
+          await populateRepliesRecursively(post.replies);
+        }
+      }
+      return posts;
+    };
 
     const thread = await ForumThread.findById(threadId);
     if (!thread) {
       return res.json({ msg: "Thread not found.", status: false });
     }
 
-    const posts = await ForumPost.find({ thread: threadId, parent: null })
-      .populate('user', 'username avatarImage')
-      .populate({
-        path: 'replies',
-        populate: [
-          { path: 'user', select: 'username avatarImage' },
-          { path: 'replies' }
-        ]
-      })
-      .sort({ createdAt: -1 });
+    // Get the top-level posts with populated user data
+    let posts = await ForumPost.find({ 
+      thread: threadId, 
+      parent: null 
+    })
+    .populate('user', 'username avatarImage')
+    .sort({ createdAt: -1 });
 
-    return res.json({ status: true, thread: { ...thread.toObject(), posts } });
+    // Recursively populate all nested replies
+    posts = await populateRepliesRecursively(posts);
+
+    return res.json({ 
+      status: true, 
+      thread: { 
+        ...thread.toObject(), 
+        posts 
+      } 
+    });
   } catch (error) {
     next(error);
   }
