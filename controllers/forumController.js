@@ -111,22 +111,19 @@ module.exports.getForumPosts = async (req, res, next) => {
   try {
     const { threadId } = req.params;
     
-    // Helper function to recursively populate replies
+    // Helper function to recursively populate replies with full user data
     const populateRepliesRecursively = async (posts) => {
       for (const post of posts) {
         if (post.replies && post.replies.length > 0) {
-          // Populate the user data for each reply
-          await ForumPost.populate(post.replies, {
+          // First, get the full reply documents with populated user data
+          post.replies = await ForumPost.find({
+            '_id': { $in: post.replies }
+          }).populate({
             path: 'user',
             select: 'username avatarImage'
           });
           
-          // Load the full reply documents to access their nested replies
-          post.replies = await ForumPost.find({
-            '_id': { $in: post.replies }
-          });
-          
-          // Recursively populate replies of replies
+          // Then recursively populate their replies
           await populateRepliesRecursively(post.replies);
         }
       }
@@ -143,17 +140,41 @@ module.exports.getForumPosts = async (req, res, next) => {
       thread: threadId, 
       parent: null 
     })
-    .populate('user', 'username avatarImage')
+    .populate({
+      path: 'user',
+      select: 'username avatarImage'
+    })
     .sort({ createdAt: -1 });
 
     // Recursively populate all nested replies
     posts = await populateRepliesRecursively(posts);
 
+    // Transform the data to ensure consistent structure
+    const transformedPosts = posts.map(post => {
+      const postObj = post.toObject();
+      return {
+        ...postObj,
+        user: {
+          _id: postObj.user._id,
+          username: postObj.user.username || '',
+          avatarImage: postObj.user.avatarImage || '',
+        },
+        replies: postObj.replies.map(reply => ({
+          ...reply,
+          user: {
+            _id: reply.user._id,
+            username: reply.user.username || '',
+            avatarImage: reply.user.avatarImage || '',
+          }
+        }))
+      };
+    });
+
     return res.json({ 
       status: true, 
       thread: { 
         ...thread.toObject(), 
-        posts 
+        posts: transformedPosts 
       } 
     });
   } catch (error) {
