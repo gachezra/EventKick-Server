@@ -28,7 +28,7 @@ const receiveHealthCheck = (req, res) => {
   
   res.json({
     status: 'active',
-    server: 'niko-kadi',
+    server: 'eventkick',
     timestamp
   });
 };
