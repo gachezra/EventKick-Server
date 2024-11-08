@@ -10,6 +10,7 @@ const forumRoutes = require("./routes/forumRoutes");
 const transactionRoutes = require("./routes/transactionRoutes");
 const verifyToken = require("./middleware/authMiddleware");
 const lipaNaMpesaRoutes = require("./routes/routes.lipanampesa.js");
+const { startHealthCheckTimer, receiveHealthCheck } = require('./utils/healthCheck');
 require("dotenv").config();
 
 const app = express();
@@ -17,6 +18,9 @@ const port = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
+
+// Health check endpoint
+app.get('/on', receiveHealthCheck);
 
 app.use("/api/mpesa", lipaNaMpesaRoutes)
 app.use("/api/auth", userRoutes);
@@ -51,4 +55,6 @@ app.get("/", (req, res) => {
 
 const server = app.listen(port, () => {
   console.log("Server Started on Port", port);
+  // Start the health check timer after server starts
+  startHealthCheckTimer();
 });
