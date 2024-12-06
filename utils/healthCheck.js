@@ -1,7 +1,7 @@
 const axios = require('axios');
 require('dotenv').config();
 
-const PARTNER_URL = `${preocess.env.PARTNER}`;
+const PARTNER_URL = `${process.env.PARTNER}`;
 
 // Function to send health check request
 const sendHealthCheck = async () => {
