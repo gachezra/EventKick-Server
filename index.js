@@ -10,11 +10,42 @@ const forumRoutes = require("./routes/forumRoutes");
 const transactionRoutes = require("./routes/transactionRoutes");
 const verifyToken = require("./middleware/authMiddleware");
 const lipaNaMpesaRoutes = require("./routes/routes.lipanampesa.js");
+const scrape = require("./utils/scraper");
 const { startHealthCheckTimer, receiveHealthCheck } = require('./utils/healthCheck');
 require("dotenv").config();
 
 const app = express();
 const port = process.env.PORT || 5000;
+
+const THREE_DAYS = 3 * 24 * 60 * 60 * 1000;
+const INITIAL_DELAY = 5 * 60 * 1000; // 5 minutes initial delay
+
+// Scheduler function with error handling and logging
+const scheduleScrapingJob = () => {
+  console.log('Setting up scheduled scraping job...');
+  
+  // Run initial scrape after 5 minutes of server start
+  setTimeout(async () => {
+    try {
+      console.log('Running initial scrape...');
+      await scrape();
+      console.log('Initial scrape completed successfully');
+    } catch (error) {
+      console.error('Error in initial scrape:', error);
+    }
+  }, INITIAL_DELAY);
+
+  // Schedule regular scraping every 3 days
+  setInterval(async () => {
+    try {
+      console.log('Running scheduled scrape...');
+      await scrape();
+      console.log('Scheduled scrape completed successfully');
+    } catch (error) {
+      console.error('Error in scheduled scrape:', error);
+    }
+  }, THREE_DAYS);
+};
 
 app.use(cors());
 app.use(express.json());
@@ -57,4 +88,6 @@ const server = app.listen(port, () => {
   console.log("Server Started on Port", port);
   // Start the health check timer after server starts
   startHealthCheckTimer();
+  // Schedule scaping job
+  scheduleScrapingJob();
 });
