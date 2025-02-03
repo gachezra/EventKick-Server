@@ -1,4 +1,4 @@
-const Event = require("../models/eventsModel");
+const Event = require("../model/eventsModel");
 
 const processEventData = (eventData) => {
   const description = `${eventData.title} ${eventData.description}`;
