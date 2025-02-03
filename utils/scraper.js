@@ -1,9 +1,7 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
-const express = require("express");
+const postEvents = require("../controllers/postEvents");
 require("dotenv").config();
-
-const app = express();
 
 async function scrapeAndSortTable(url) {
   try {
@@ -195,7 +193,7 @@ const scrape = async () => {
 
   const processEvent = processEvents(evres);
 
-  return procrssEvent;
+  await postEvents(processEvent);
 });
 
 module.exports = scrape;
