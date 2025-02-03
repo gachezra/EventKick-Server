@@ -194,6 +194,6 @@ const scrape = async () => {
   const processEvent = processEvents(evres);
 
   await postEvents(processEvent);
-});
+};
 
 module.exports = scrape;
