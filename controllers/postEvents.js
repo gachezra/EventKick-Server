@@ -1,14 +1,14 @@
 const Event = require("../models/eventsModel");
 
 const processEventData = (eventData) => {
-  const description = eventData.title + eventData.description;
+  const description = `${eventData.title} ${eventData.description}`;
   const event = {
     title: description,
     description: description,
-    date: req.body.date,
-    location: req.body.title,
+    date: eventData.date,
+    location: eventData.title,
     user: 1,
-    image: req.body.url,
+    image: eventData.url,
     isPaid: false,
     ticketPrice: 0,
   };
@@ -29,22 +29,18 @@ const postSingleEvent = async (eventData) => {
   }
 };
 
-const postEvents = async (req, res) => {
+const postEvents = async (events) => {
   try {
     // Handle single event
-    if (!Array.isArray(req.body)) {
-      const newEvent = await postSingleEvent(req.body);
-      return res.status(201).json({
-        success: true,
-        data: newEvent,
-      });
+    if (!Array.isArray(events)) {
+      const newEvent = await postSingleEvent(events);
     }
 
     // Handle multiple events
     const results = [];
     const errors = [];
 
-    for (const eventData of req.body) {
+    for (const eventData of events) {
       try {
         const newEvent = await postSingleEvent(eventData);
         results.push(newEvent);
@@ -56,26 +52,21 @@ const postEvents = async (req, res) => {
       }
     }
 
-    return res.status(201).json({
+    console.log({
       success: true,
       data: {
         succeeded: results,
         failed: errors,
       },
-      totalProcessed: req.body.length,
+      totalProcessed: events.length,
       successCount: results.length,
       errorCount: errors.length,
     });
   } catch (error) {
     console.error("Error in postEvents:", error);
-    return res.status(500).json({
-      success: false,
-      error: "Internal server error while processing events",
-    });
   }
 };
 
 module.exports = {
-  postEvents,
-  postSingleEvent, // Exported for testing or individual use
+  postEvents
 };
