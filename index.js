@@ -18,7 +18,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 const THREE_DAYS = 3 * 24 * 60 * 60 * 1000;
-const INITIAL_DELAY = 5 * 60 * 1000; // 5 minutes initial delay
+const INITIAL_DELAY = 1000; // 5 minutes initial delay
 
 // Scheduler function with error handling and logging
 const scheduleScrapingJob = () => {

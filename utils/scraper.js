@@ -1,6 +1,6 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
-const postEvents = require("../controllers/postEvents");
+const { postEvents } = require("../controllers/postEvents");
 require("dotenv").config();
 
 async function scrapeAndSortTable(url) {
@@ -181,13 +181,15 @@ const processEvents = (rawData) => {
 
 const scrape = async () => {
   const events = await main();
+
+  const cleanedResult = cleanSequentialReverseDuplicateLinks(events);
   
-  const filteredResult = cleanedResult.slice(0, 5).map((event) => ({
+  const filteredResult = cleanedResult.slice(0, 4).map((event) => ({
     date: event.date,
     links: event.links,
   }));
 
-  const evs = filteredResult.slice(1, 5);
+  const evs = filteredResult.slice(1, 4);
 
   const evres = cleanData(evs);
 

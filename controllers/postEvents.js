@@ -1,26 +1,47 @@
-const Event = require("../model/eventsModel");
+const Events = require("../model/eventsModel");
+const { parse, format } = require('date-fns');
+const mongoose = require("mongoose");
 
 const processEventData = (eventData) => {
+  console.log(eventData)
   const description = `${eventData.title} ${eventData.description}`;
+  
+  const inputWithYear = eventData.date + " 2025";
+
+  const parsedDate = parse(inputWithYear, "EEEE do MMMM yyyy", new Date());
+
+  const formattedDate = format(parsedDate, "yyyy-MM-dd");
+
+  const userId = new mongoose.Types.ObjectId("000000000000000000000001");
   const event = {
     title: description,
     description: description,
-    date: eventData.date,
+    date: formattedDate,
     location: eventData.title,
-    user: 1,
+    user: userId,
     image: eventData.url,
     isPaid: false,
     ticketPrice: 0,
   };
-  return {
-    event,
-  };
+  console.log(event)
+  return event;
 };
 
 const postSingleEvent = async (eventData) => {
   try {
-    const processedData = processEventData(eventData);
-    const event = new Event(processedData);
+    const processedEvent = processEventData(eventData);
+    const event = new Events({
+      title: processedEvent.title,
+      description: processedEvent.description,
+      date: processedEvent.date,
+      location: processedEvent.location,
+      user: processedEvent.user,
+      image: processedEvent.image,
+      isPaid: processedEvent.isPaid,
+      ticketPrice: processedEvent.ticketPrice,
+    });
+
+    console.log('event: ', event)
     const newEvent = await event.save();
     return newEvent;
   } catch (error) {
