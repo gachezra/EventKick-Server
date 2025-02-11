@@ -89,5 +89,5 @@ const server = app.listen(port, () => {
   // Start the health check timer after server starts
   startHealthCheckTimer();
   // Schedule scaping job
-  scheduleScrapingJob();
+  //scheduleScrapingJob();
 });
