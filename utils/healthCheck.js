@@ -13,13 +13,18 @@ const sendHealthCheck = async () => {
   }
 };
 
-// Start the timer to send requests every 2 minutes
+function getRandomInterval() {
+  // Random time between 2 and 3 hours in milliseconds
+  return Math.floor(Math.random() * (10800000 - 7200000 + 1)) + 7200000;
+};
+
+// Start the timer to send requests randomly
 const startHealthCheckTimer = () => {
   // Send first check immediately
   sendHealthCheck();
   
-  // Then send every 2 minutes
-  setInterval(sendHealthCheck, 120000);
+  // Then send randomly
+  setInterval(sendHealthCheck, getRandomInterval);
 };
 
 // Handle incoming health check
